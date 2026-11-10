@@ -1,0 +1,10 @@
+{
+  "name": "laundry-akbar-fullstack",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm install --omit=dev --prefix backend",
+    "start": "node backend/server.js"
+  },
+  "engines": { "node": ">=18" }
+}
