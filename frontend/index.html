@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Akbar - Layanan Cuci Bersih & Cepat</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandMint: '#69D2B3',
+                        brandMintDark: '#4DBE9D',
+                        brandYellow: '#F3CB77',
+                        brandYellowDark: '#E0B55C',
+                        brandPink: '#F8C6E2',
+                        brandPinkDark: '#E8A5CD',
+                        brandDarkText: '#2B3A42'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #69D2B3; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col selection:bg-brandMint selection:text-white">
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300" id="mainHeader">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="handleLogoClick()">
+                <div class="w-12 h-12 bg-brandMint rounded-2xl flex items-center justify-center text-white shadow-md shadow-brandMint/30 transform hover:rotate-6 transition-transform">
+                    <i class="fa-solid font-bold fa-soap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold text-brandDarkText tracking-tight leading-none">Laundry Akbar</h1>
+                    <span class="text-xs text-emerald-600 font-semibold tracking-wider uppercase">Express & Clean</span>
+                </div>
+            </div>
+
+            <!-- Auth Buttons & User Profile -->
+            <div class="flex items-center space-x-3" id="authNavButtons">
+                <!-- Logged Out State -->
+                <div id="guestButtons" class="flex items-center space-x-2">
+                    <button onclick="openAuthModal('login')" class="px-5 py-2.5 rounded-xl font-semibold text-brandDarkText hover:bg-emerald-50 transition-all border border-emerald-100">
+                        Masuk
+                    </button>
+                    <button onclick="openAuthModal('register')" class="px-5 py-2.5 rounded-xl font-semibold bg-brandMint hover:bg-brandMintDark text-white shadow-md shadow-brandMint/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                        Daftar
+                    </button>
+                </div>
+
+                <!-- Logged In State -->
+                <div id="userMenu" class="hidden items-center space-x-4">
+                    <!-- Notification Bell -->
+                    <div class="relative">
+                        <button onclick="toggleNotificationDropdown()" class="relative p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition">
+                            <i class="fa-solid fa-bell text-lg"></i>
+                            <span id="notifBadge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">0</span>
+                        </button>
+                        <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 flex justify-between items-center">
+                                <span class="font-bold text-sm text-gray-800">Notifikasi</span>
+                                <button onclick="markAllNotificationsRead()" class="text-xs text-brandMintDark hover:underline font-semibold">Tandai dibaca</button>
+                            </div>
+                            <div id="notifList" class="max-h-64 overflow-y-auto divide-y divide-gray-50">
+                                <div class="p-4 text-center text-xs text-gray-400">Belum ada notifikasi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative" id="userDropdownContainer">
+                        <button onclick="toggleUserDropdown()" class="flex items-center space-x-2 bg-gray-100 p-1.5 pr-3 rounded-xl hover:bg-gray-200 transition">
+                            <div class="w-8 h-8 rounded-lg bg-brandMint text-white flex items-center justify-center font-bold" id="userAvatar">A</div>
+                            <span class="font-semibold text-sm text-gray-700" id="userNameDisplay">User</span>
+                            <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="#" onclick="showMainView(); toggleUserDropdown(false);" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50"><i class="fa-solid fa-gauge mr-2"></i> Dashboard</a>
+                            <hr class="my-1 border-gray-100">
+                            <button onclick="handleLogout(); toggleUserDropdown(false);" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"><i class="fa-solid fa-right-from-bracket mr-2"></i> Keluar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= PUBLIC LANDING PAGE ================= -->
+    <main id="landingView" class="flex-grow">
+        <!-- Hero Section -->
+        <section id="beranda" class="bg-brandMint text-white py-16 md:py-24 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-20 -left-10 w-80 h-80 bg-white/15 rounded-full blur-3xl"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 text-center md:text-left">
+                        <div class="inline-block bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium tracking-wide">
+                            ✨ Layanan Laundry Terpercaya & Higienis
+                        </div>
+                        <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+                            Selamat Datang!
+                        </h2>
+                        <p class="text-lg md:text-xl font-medium text-emerald-50 leading-relaxed max-w-xl">
+                            Di <strong class="underline decoration-brandYellow underline-offset-4">Laundry Akbar</strong>, kami menyediakan jasa cuci express, laundry kiloan, dan layanan cuci profesional lainnya dengan hasil wangi, bersih, & rapi.
+                        </p>
+                        <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <button onclick="handleStartOrder()" class="px-8 py-4 rounded-2xl bg-brandYellow hover:bg-brandYellowDark text-gray-900 font-bold text-lg shadow-lg shadow-brandYellow/30 transition transform hover:-translate-y-1">
+                                Mulai Order Sekarang <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <div class="relative w-64 h-64 md:w-80 md:h-80 bg-white/20 backdrop-blur-md rounded-3xl p-6 border border-white/30 shadow-2xl flex flex-col items-center justify-center transform hover:scale-105 transition duration-500">
+                            <div class="w-full h-full bg-white rounded-2xl p-6 flex flex-col justify-between shadow-inner relative overflow-hidden">
+                                <div class="flex justify-between items-center border-b-2 border-gray-100 pb-3">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                                    </div>
+                                    <div class="w-8 h-8 rounded-full border-4 border-emerald-400 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                                    </div>
+                                </div>
+                                <div class="my-auto self-center w-36 h-36 md:w-44 md:h-44 rounded-full border-8 border-brandMint bg-emerald-50 flex items-center justify-center shadow-lg relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-brandMint/20 rounded-full animate-spin" style="animation-duration: 8s;"></div>
+                                    <i class="fa-solid fa-shirt text-brandMint text-4xl md:text-5xl z-10 animate-bounce" style="animation-duration: 3s;"></i>
+                                </div>
+                                <div class="text-center font-bold text-brandDarkText text-xs uppercase tracking-wider">
+                                    Laundry Akbar Machine
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Layanan Kami Section -->
+        <section id="layanan" class="bg-brandYellow py-20 text-brandDarkText relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">Layanan Kami</h2>
+                    <p class="text-lg font-medium text-gray-800">Mau cuci apa nih dan pakai layanan apa?</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:shadow-2xl transition transform hover:-translate-y-2 border border-yellow-100">
+                        <div>
+                            <div class="h-44 bg-brandMint rounded-2xl mb-5 flex items-center justify-center text-white shadow-inner">
+                                <i class="fa-solid fa-basket-shopping text-6xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">Cuci Reguler</h3>
+                            <p class="text-sm text-gray-500 mb-4">Pencucian bersih standar 2-3 hari. Cocok untuk pakaian sehari-hari.</p>
+                            <div class="text-lg font-extrabold text-brandMintDark mb-6">Rp 6.000 <span class="text-xs font-normal text-gray-500">/ kg</span></div>
+                        </div>
+                        <button onclick="handleServiceSelect('Reguler')" class="w-full py-3 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-xl transition shadow-md shadow-brandMint/20">
+                            Pesan Layanan
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:shadow-2xl transition transform hover:-translate-y-2 border border-yellow-100">
+                        <div>
+                            <div class="h-44 bg-brandMint rounded-2xl mb-5 flex items-center justify-center text-white shadow-inner">
+                                <i class="fa-solid fa-wind text-6xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">Cuci Kering</h3>
+                            <p class="text-sm text-gray-500 mb-4">Dry cleaning khusus jas, gaun, dan bahan halus tanpa air berlebih.</p>
+                            <div class="text-lg font-extrabold text-brandMintDark mb-6">Rp 12.000 <span class="text-xs font-normal text-gray-500">/ kg</span></div>
+                        </div>
+                        <button onclick="handleServiceSelect('Kering')" class="w-full py-3 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-xl transition shadow-md shadow-brandMint/20">
+                            Pesan Layanan
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:shadow-2xl transition transform hover:-translate-y-2 border border-yellow-100">
+                        <div>
+                            <div class="h-44 bg-brandMint rounded-2xl mb-5 flex items-center justify-center text-white shadow-inner">
+                                <i class="fa-solid fa-soap text-6xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">Cuci Basah</h3>
+                            <p class="text-sm text-gray-500 mb-4">Cuci + Bilas bilamana Anda ingin mengeringkan dan menyetrika sendiri.</p>
+                            <div class="text-lg font-extrabold text-brandMintDark mb-6">Rp 4.000 <span class="text-xs font-normal text-gray-500">/ kg</span></div>
+                        </div>
+                        <button onclick="handleServiceSelect('Basah')" class="w-full py-3 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-xl transition shadow-md shadow-brandMint/20">
+                            Pesan Layanan
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:shadow-2xl transition transform hover:-translate-y-2 border border-yellow-100">
+                        <div>
+                            <div class="h-44 bg-brandPink rounded-2xl mb-5 flex items-center justify-center text-white shadow-inner">
+                                <i class="fa-solid fa-bolt text-6xl text-brandDarkText/70"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">Cuci Express</h3>
+                            <p class="text-sm text-gray-500 mb-4">Selesai kilat dalam 6 - 12 jam! Langsung bersih, harum & siap pakai.</p>
+                            <div class="text-lg font-extrabold text-brandMintDark mb-6">Rp 10.000 <span class="text-xs font-normal text-gray-500">/ kg</span></div>
+                        </div>
+                        <button onclick="handleServiceSelect('Express')" class="w-full py-3 bg-brandPink hover:bg-brandPinkDark text-gray-900 font-bold rounded-xl transition shadow-md shadow-brandPink/30">
+                            Pesan Layanan
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-14 text-center">
+                    <p class="text-lg font-bold text-gray-800 bg-white/40 inline-block px-6 py-3 rounded-2xl backdrop-blur-sm">
+                        Mau pesan? Kamu bisa <button onclick="openAuthModal('login')" class="underline text-emerald-800 hover:text-black">masuk</button> atau <button onclick="openAuthModal('register')" class="underline text-emerald-800 hover:text-black">daftar dulu</button>!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Apa Kata Pelanggan Section -->
+        <section id="komentar" class="bg-brandPink py-20 text-brandDarkText">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Apa kata pelanggan?</h2>
+                    <p class="text-gray-700 font-medium">Pengalaman kepuasan dari pelanggan setia Laundry Akbar</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-3xl p-8 shadow-xl relative pt-12 mt-6">
+                        <div class="w-16 h-16 bg-brandYellow rounded-full border-4 border-white absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center text-white text-xl font-bold shadow">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div class="flex justify-center text-yellow-400 text-sm mb-4 space-x-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 text-center italic mb-6">"Pakaian selalu harum dan lipatannya super rapi. Layanan Express-nya sangat membantu kalau butuh baju mendadak untuk acara."</p>
+                        <h4 class="font-bold text-center text-gray-900">Budi Santoso</h4>
+                        <p class="text-xs text-center text-gray-400">Pelanggan Kiloan</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-8 shadow-xl relative pt-12 mt-6">
+                        <div class="w-16 h-16 bg-brandYellow rounded-full border-4 border-white absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center text-white text-xl font-bold shadow">
+                            <i class="fa-solid fa-user-ninja"></i>
+                        </div>
+                        <div class="flex justify-center text-yellow-400 text-sm mb-4 space-x-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 text-center italic mb-6">"Harganya sangat ramah di kantong mahasiswa. Paling suka karena ada fitur antar jemput langsung ke kost!"</p>
+                        <h4 class="font-bold text-center text-gray-900">Siti Rahma</h4>
+                        <p class="text-xs text-center text-gray-400">Mahasiswi</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-8 shadow-xl relative pt-12 mt-6">
+                        <div class="w-16 h-16 bg-brandYellow rounded-full border-4 border-white absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center text-white text-xl font-bold shadow">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="flex justify-center text-yellow-400 text-sm mb-4 space-x-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 text-center italic mb-6">"Cuci Kering jas kantor saya hasilnya bersih maksimal tanpa merusak bahan. Sangat profesional Laundry Akbar."</p>
+                        <h4 class="font-bold text-center text-gray-900">Andi Pratama</h4>
+                        <p class="text-xs text-center text-gray-400">Karyawan Swasta</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hubungi Kami Section -->
+        <section id="kontak" class="bg-brandMint py-20 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Hubungi kami</h2>
+                    <p class="text-emerald-50">Kami siap membantu menjawab pertanyaan & kebutuhan laundry Anda</p>
+                </div>
+
+                <div class="grid md:grid-cols-12 gap-8 items-center">
+                    <div class="md:col-span-7 bg-white rounded-3xl p-8 shadow-2xl text-gray-800">
+                        <form onsubmit="handleContactSubmit(event)" class="space-y-5">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4">Kirim Pesan</h3>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                                <input type="text" required placeholder="Masukkan nama Anda" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint focus:border-brandMint outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Nomor WhatsApp</label>
+                                <input type="tel" required placeholder="08xxxxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint focus:border-brandMint outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Pesan / Pertanyaan</label>
+                                <textarea rows="4" required placeholder="Tuliskan pesan Anda di sini..." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint focus:border-brandMint outline-none transition"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-xl shadow-lg transition">
+                                Kirim Pesan Sekarang
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="md:col-span-5 flex flex-col space-y-6 items-center md:items-start justify-center pl-0 md:pl-8">
+                        <div class="flex items-center space-x-4 bg-white/20 backdrop-blur-md p-4 rounded-2xl w-full border border-white/30">
+                            <div class="w-14 h-14 bg-white text-brandMint rounded-full flex items-center justify-center text-2xl font-bold shadow">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Alamat Outlet</h4>
+                                <p class="text-sm text-emerald-50">Jl. Raya Utama No. 123, Bandung</p>
+                            </div>
+                        </div>
+
+                        <a href="https://wa.me/6282128411542?text=Halo%20Laundry%20Akbar,%20saya%20ingin%20bertanya%20tentang%20layanan%20laundry." target="_blank" rel="noopener noreferrer" aria-label="Chat WhatsApp Laundry Akbar" class="group flex items-center space-x-4 bg-white/20 backdrop-blur-md p-4 rounded-2xl w-full border border-white/30 cursor-pointer transition-all duration-300 hover:bg-white/30 hover:border-white/60 hover:-translate-y-1 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                            <div class="w-14 h-14 bg-white text-brandMint rounded-full flex items-center justify-center text-2xl font-bold shadow transition-all duration-300 group-hover:bg-[#25D366] group-hover:text-white group-hover:scale-110">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-lg">WhatsApp Hotline</h4>
+                                <p class="text-sm text-emerald-50">+62 821-2841-1542</p>
+                                <span class="text-xs font-semibold text-white/90 opacity-80 group-hover:opacity-100">Klik untuk chat sekarang</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-sm opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"></i>
+                        </a>
+
+                        <div class="flex items-center space-x-4 bg-white/20 backdrop-blur-md p-4 rounded-2xl w-full border border-white/30">
+                            <div class="w-14 h-14 bg-white text-brandMint rounded-full flex items-center justify-center text-2xl font-bold shadow">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Jam Operasional</h4>
+                                <p class="text-sm text-emerald-50">Senin - Minggu: 07.00 - 21.00 WIB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= DASHBOARD USER VIEW (CUSTOMER) ================= -->
+    <div id="dashboardView" class="hidden flex-grow flex flex-col md:flex-row bg-gray-100 min-h-[calc(100vh-5rem)]">
+        <aside class="w-full md:w-64 bg-brandMint text-white flex-shrink-0 p-6 flex flex-col justify-between">
+            <div>
+                <div class="mb-8 pb-4 border-b border-white/20 flex items-center space-x-3">
+                    <i class="fa-solid fa-soap text-2xl"></i>
+                    <span class="font-bold text-xl tracking-wide">Laundry Akbar</span>
+                </div>
+                <nav class="space-y-2">
+                    <button onclick="switchDashboardTab('pesan')" id="btnTabPesan" class="w-full text-left px-4 py-3 rounded-xl font-semibold transition flex items-center space-x-3 bg-white text-brandDarkText shadow">
+                        <i class="fa-solid fa-cart-plus w-5"></i>
+                        <span>Pesanan Baru</span>
+                    </button>
+                    <button onclick="switchDashboardTab('status')" id="btnTabStatus" class="w-full text-left px-4 py-3 rounded-xl font-semibold transition flex items-center space-x-3 text-white hover:bg-white/10">
+                        <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                        <span>Status Pesanan</span>
+                    </button>
+                    <button onclick="switchDashboardTab('riwayat')" id="btnTabRiwayat" class="w-full text-left px-4 py-3 rounded-xl font-semibold transition flex items-center space-x-3 text-white hover:bg-white/10">
+                        <i class="fa-solid fa-box-archive w-5"></i>
+                        <span>Riwayat Pesanan</span>
+                    </button>
+                </nav>
+            </div>
+            <div class="pt-6 border-t border-white/20">
+                <button onclick="navigateTo('landing')" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-emerald-100 hover:bg-white/10 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Kembali ke Web</span>
+                </button>
+            </div>
+        </aside>
+
+        <section class="flex-grow p-6 md:p-10 overflow-y-auto">
+            <!-- TAB 1: FORM PESANAN BARU -->
+            <div id="tabPesanContent" class="max-w-3xl mx-auto bg-white rounded-3xl p-6 md:p-8 shadow-md">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Form Order Laundry</h2>
+                <p class="text-gray-500 mb-6 text-sm">Isi rincian cucian Anda di bawah untuk membuat orderan baru.</p>
+
+                <form onsubmit="handleOrderSubmit(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Jenis Layanan</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <label class="border-2 rounded-2xl p-3 text-center cursor-pointer hover:border-brandMint transition flex flex-col items-center select-none" id="lbl-Reguler">
+                                <input type="radio" name="serviceType" value="Reguler" checked onchange="calculateOrderTotal()" class="hidden">
+                                <i class="fa-solid fa-basket-shopping text-brandMint text-xl mb-1"></i>
+                                <span class="text-xs font-bold block">Reguler</span>
+                                <span class="text-[10px] text-gray-400">Rp 6.000/kg</span>
+                            </label>
+
+                            <label class="border-2 rounded-2xl p-3 text-center cursor-pointer hover:border-brandMint transition flex flex-col items-center select-none" id="lbl-Kering">
+                                <input type="radio" name="serviceType" value="Kering" onchange="calculateOrderTotal()" class="hidden">
+                                <i class="fa-solid fa-wind text-brandMint text-xl mb-1"></i>
+                                <span class="text-xs font-bold block">Cuci Kering</span>
+                                <span class="text-[10px] text-gray-400">Rp 12.000/kg</span>
+                            </label>
+
+                            <label class="border-2 rounded-2xl p-3 text-center cursor-pointer hover:border-brandMint transition flex flex-col items-center select-none" id="lbl-Basah">
+                                <input type="radio" name="serviceType" value="Basah" onchange="calculateOrderTotal()" class="hidden">
+                                <i class="fa-solid fa-soap text-brandMint text-xl mb-1"></i>
+                                <span class="text-xs font-bold block">Cuci Basah</span>
+                                <span class="text-[10px] text-gray-400">Rp 4.000/kg</span>
+                            </label>
+
+                            <label class="border-2 rounded-2xl p-3 text-center cursor-pointer hover:border-brandMint transition flex flex-col items-center select-none" id="lbl-Express">
+                                <input type="radio" name="serviceType" value="Express" onchange="calculateOrderTotal()" class="hidden">
+                                <i class="fa-solid fa-bolt text-brandPinkDark text-xl mb-1"></i>
+                                <span class="text-xs font-bold block">Cuci Express</span>
+                                <span class="text-[10px] text-gray-400">Rp 10.000/kg</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Estimasi Berat (Kg)</label>
+                            <input type="number" id="orderWeight" min="1" max="50" value="3" oninput="calculateOrderTotal()" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Opsi Penjemputan</label>
+                            <select id="pickupOption" onchange="calculateOrderTotal()" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint outline-none bg-white">
+                                <option value="antar-jemput">Antar Jemput Kurir (+Rp 5.000)</option>
+                                <option value="antar-sendiri">Antar Sendiri ke Outlet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Alamat Penjemputan / Pengiriman</label>
+                        <textarea id="orderAddress" rows="2" placeholder="Masukkan alamat lengkap & patokan..." required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Catatan Tambahan (Opsional)</label>
+                        <input type="text" id="orderNotes" placeholder="Contoh: Baju putih dipisah, tambahkan pewangi ekstra" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brandMint outline-none">
+                    </div>
+
+                    <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-500 block uppercase font-semibold">Total Subtotal</span>
+                            <span class="text-2xl font-extrabold text-brandMintDark" id="calculatedPriceDisplay">Rp 23.000</span>
+                        </div>
+                        <span class="text-xs bg-white px-3 py-1 rounded-full text-emerald-700 border border-emerald-200 font-medium">Pembayaran QRIS / Cash</span>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-2xl shadow-lg transition text-lg">
+                        Konfirmasi Order Laundry
+                    </button>
+                </form>
+            </div>
+
+            <!-- TAB 2: STATUS PESANAN -->
+            <div id="tabStatusContent" class="hidden max-w-4xl mx-auto space-y-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Status Pesanan Aktif</h2>
+                    <span class="bg-brandMint text-white px-3 py-1 rounded-full text-xs font-bold" id="activeOrdersBadge">0 Pesanan</span>
+                </div>
+                <div id="activeOrdersList" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 3: RIWAYAT PESANAN -->
+            <div id="tabRiwayatContent" class="hidden max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Riwayat Transaksi</h2>
+                <div class="bg-white rounded-3xl shadow overflow-hidden border border-gray-100">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-6">ID Order</th>
+                                    <th class="py-4 px-6">Tanggal</th>
+                                    <th class="py-4 px-6">Layanan</th>
+                                    <th class="py-4 px-6">Berat</th>
+                                    <th class="py-4 px-6">Total</th>
+                                    <th class="py-4 px-6">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-gray-100 text-sm font-medium"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= DASHBOARD ADMIN VIEW ================= -->
+    <div id="adminView" class="hidden flex-grow flex flex-col md:flex-row bg-gray-100 min-h-[calc(100vh-5rem)]">
+        <aside class="w-full md:w-64 bg-slate-800 text-white flex-shrink-0 p-6 flex flex-col justify-between">
+            <div>
+                <div class="mb-8 pb-4 border-b border-slate-700 flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-brandYellow rounded-xl flex items-center justify-center text-slate-900 font-bold">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg block leading-none">Admin Panel</span>
+                        <span class="text-[10px] text-amber-400 uppercase font-semibold tracking-wider">Laundry Akbar</span>
+                    </div>
+                </div>
+                <nav class="space-y-2">
+                    <button class="w-full text-left px-4 py-3 rounded-xl font-semibold transition flex items-center space-x-3 bg-slate-700 text-amber-300">
+                        <i class="fa-solid fa-list-check w-5"></i>
+                        <span>Kelola Pesanan</span>
+                    </button>
+                </nav>
+            </div>
+            <div class="pt-6 border-t border-slate-700">
+                <button onclick="handleLogout()" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-red-400 hover:bg-slate-700 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Keluar Admin</span>
+                </button>
+            </div>
+        </aside>
+
+        <section class="flex-grow p-6 md:p-10 overflow-y-auto">
+            <div class="max-w-6xl mx-auto space-y-8">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500 font-semibold uppercase">Total Pesanan</span>
+                            <h3 class="text-3xl font-extrabold text-gray-900" id="adminTotalOrders">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500 font-semibold uppercase">Pesanan Aktif</span>
+                            <h3 class="text-3xl font-extrabold text-amber-500" id="adminActiveOrders">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-spinner"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-500 font-semibold uppercase">Total Pendapatan</span>
+                            <h3 class="text-3xl font-extrabold text-emerald-600" id="adminTotalRevenue">Rp 0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Daftar Semua Pesanan Pelanggan</h2>
+                            <p class="text-xs text-gray-500">Update status cucian secara langsung untuk pelanggan</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <i class="fa-solid fa-database mr-1"></i> Mode: Server API
+                            </span>
+                            <button onclick="refreshData(true)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl">
+                                <i class="fa-solid fa-rotate mr-1"></i> Refresh Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-4">ID Order</th>
+                                    <th class="py-4 px-4">Pelanggan</th>
+                                    <th class="py-4 px-4">Layanan</th>
+                                    <th class="py-4 px-4">Berat</th>
+                                    <th class="py-4 px-4">Total</th>
+                                    <th class="py-4 px-4">Alamat</th>
+                                    <th class="py-4 px-4">Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersTableBody" class="divide-y divide-gray-100 text-sm font-medium"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-gray-900 text-white py-8 border-t border-gray-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-brandMint rounded-lg flex items-center justify-center text-white">
+                    <i class="fa-solid fa-soap"></i>
+                </div>
+                <span class="font-bold text-lg">Laundry Akbar</span>
+            </div>
+            <p class="text-xs text-gray-400">&copy; 2026 Laundry Akbar. Hak Cipta Dilindungi Undang-Undang.</p>
+            <div class="flex space-x-4 text-gray-400">
+                <a href="#" class="hover:text-brandMint"><i class="fa-brands fa-instagram text-lg"></i></a>
+                <a href="#" class="hover:text-brandMint"><i class="fa-brands fa-facebook text-lg"></i></a>
+                <a href="https://wa.me/6282128411542?text=Halo%20Laundry%20Akbar,%20saya%20ingin%20bertanya%20tentang%20layanan%20laundry." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Laundry Akbar" title="Chat via WhatsApp" class="inline-block transition-all duration-300 hover:text-[#25D366] hover:scale-125 hover:-translate-y-0.5"><i class="fa-brands fa-whatsapp text-lg"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= AUTH MODAL ================= -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div id="loginCard" class="bg-brandMint w-full max-w-md rounded-3xl p-8 shadow-2xl text-white relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <h3 class="text-3xl font-extrabold mb-1">Selamat Datang!</h3>
+                <p class="text-xs text-emerald-100">Silahkan masuk ke akun Anda</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Nama Pengguna</label>
+                    <input type="text" id="loginUsername" required placeholder="Masukkan nama pengguna" class="w-full px-4 py-3 rounded-full bg-white text-gray-800 text-sm border-none outline-none focus:ring-2 focus:ring-brandYellow">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Kata Sandi</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-full bg-white text-gray-800 text-sm border-none outline-none focus:ring-2 focus:ring-brandYellow">
+                </div>
+                <div class="pt-2 flex justify-center">
+                    <button type="submit" class="px-8 py-2.5 bg-white text-brandMint font-bold rounded-full hover:bg-emerald-50 transition shadow-md">
+                        Masuk
+                    </button>
+                </div>
+                <div class="text-center pt-4 border-t border-white/20">
+                    <span class="text-xs text-emerald-100">Belum memiliki akun? </span>
+                    <button type="button" onclick="switchAuthView('register')" class="text-xs font-bold text-brandYellow hover:underline">Daftar Akun</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="registerCard" class="hidden bg-brandMint w-full max-w-md rounded-3xl p-8 shadow-2xl text-white relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <h3 class="text-3xl font-extrabold mb-1">Daftar Akun</h3>
+                <p class="text-xs text-emerald-100">Buat akun baru untuk mulai order</p>
+            </div>
+            <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Nama Pengguna</label>
+                    <input type="text" id="regUsername" required placeholder="Masukkan nama pengguna" class="w-full px-4 py-3 rounded-full bg-white text-gray-800 text-sm border-none outline-none focus:ring-2 focus:ring-brandYellow">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Kata Sandi</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-full bg-white text-gray-800 text-sm border-none outline-none focus:ring-2 focus:ring-brandYellow">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Konfirmasi Kata Sandi</label>
+                    <input type="password" id="regConfirmPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-full bg-white text-gray-800 text-sm border-none outline-none focus:ring-2 focus:ring-brandYellow">
+                </div>
+                <div class="pt-2 flex justify-center">
+                    <button type="submit" class="px-8 py-2.5 bg-white text-brandMint font-bold rounded-full hover:bg-emerald-50 transition shadow-md">
+                        Daftar
+                    </button>
+                </div>
+                <div class="text-center pt-4 border-t border-white/20">
+                    <span class="text-xs text-emerald-100">Sudah punya akun? </span>
+                    <button type="button" onclick="switchAuthView('login')" class="text-xs font-bold text-brandYellow hover:underline">Masuk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= QRIS PAYMENT MODAL ================= -->
+    <div id="qrisModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl text-gray-800 relative">
+            <button onclick="closeQrisModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold mb-2">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>QRIS Pembayaran Nasional</span>
+                </div>
+                <h3 class="text-lg font-extrabold text-gray-900">FADHIL AZHAR SAPUTRO, ELEKTRONIK</h3>
+                <p class="text-xs text-gray-500 font-mono">NMID: ID1026494291788</p>
+            </div>
+
+            <div class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center mb-4">
+                <svg class="w-44 h-44 text-gray-900" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="5" y="5" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                    <rect x="12" y="12" width="11" height="11"/>
+                    <rect x="70" y="5" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                    <rect x="77" y="12" width="11" height="11"/>
+                    <rect x="5" y="70" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                    <rect x="12" y="77" width="11" height="11"/>
+                    <rect x="38" y="8" width="6" height="6"/><rect x="48" y="8" width="6" height="6"/><rect x="58" y="14" width="6" height="6"/>
+                    <rect x="38" y="20" width="12" height="6"/><rect x="54" y="24" width="6" height="10"/>
+                    <rect x="8" y="38" width="6" height="12"/><rect x="20" y="42" width="10" height="6"/><rect x="36" y="36" width="14" height="14"/>
+                    <rect x="56" y="38" width="8" height="6"/><rect x="70" y="38" width="12" height="6"/><rect x="88" y="38" width="6" height="14"/>
+                    <rect x="10" y="56" width="14" height="6"/><rect x="30" y="56" width="6" height="8"/><rect x="44" y="56" width="10" height="6"/>
+                    <rect x="62" y="54" width="8" height="12"/><rect x="76" y="56" width="14" height="6"/>
+                    <rect x="38" y="70" width="8" height="8"/><rect x="52" y="72" width="12" height="6"/><rect x="70" y="70" width="8" height="8"/>
+                    <rect x="84" y="72" width="10" height="10"/><rect x="38" y="84" width="14" height="8"/><rect x="60" y="84" width="12" height="8"/><rect x="78" y="88" width="14" height="6"/>
+                </svg>
+                <span class="text-[11px] text-gray-400 mt-2">Scan menggunakan GoPay, OVO, DANA, ShopeePay, atau Mobile Banking</span>
+            </div>
+
+            <div class="bg-emerald-50 rounded-2xl p-4 mb-5 flex justify-between items-center border border-emerald-100">
+                <div>
+                    <span class="text-xs text-gray-500 block">Total Tagihan</span>
+                    <span id="qrisAmountDisplay" class="text-xl font-extrabold text-brandMintDark">Rp 0</span>
+                </div>
+                <span id="qrisStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                    Menunggu Pembayaran
+                </span>
+            </div>
+
+            <button id="qrisConfirmBtn" onclick="confirmQrisPayment()" class="w-full py-3.5 bg-brandMint hover:bg-brandMintDark text-white font-bold rounded-2xl shadow-lg transition">
+                Saya Sudah Bayar (Konfirmasi)
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= NOTIFICATION TOAST ================= -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-circle-info text-brandMint" id="toastIcon"></i>
+        <span id="toastMessage" class="text-sm font-medium">Pesan notifikasi</span>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script src="app.js"></script>
+</body>
+</html>

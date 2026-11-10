@@ -1,0 +1,5 @@
+node_modules/
+.env
+*.log
+backend/data/db.json
+backend/data/db.json.tmp
